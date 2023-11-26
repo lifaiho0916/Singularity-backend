@@ -1,0 +1,124 @@
+server:
+  port: 8080
+
+logging:
+  level:
+    org:
+      hibernate:
+        envers:
+          boot: off
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include:
+          [
+            'configprops',
+            'env',
+            'health',
+            'info',
+            'logfile',
+            'loggers',
+            'prometheus',
+            'threaddump',
+            'liquibase',
+          ]
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+      group:
+        liveness:
+          show-details: always
+          include: livenessState
+        readiness:
+          show-details: always
+          include: readinessState,db
+    jhimetrics:
+      enabled: true
+  info:
+    git:
+      mode: full
+    env:
+      enabled: true
+  health:
+    mail:
+      enabled: false # When using the MailService, configure an SMTP server and set this to true
+  metrics:
+    enable:
+      http: true
+      jvm: true
+      logback: true
+      process: true
+      system: true
+    distribution:
+      percentiles-histogram:
+        all: true
+      percentiles:
+        all: 0, 0.5, 0.75, 0.95, 0.99, 1.0
+    tags:
+      application: ${spring.application.name}
+      environment: ${ENVIRONMENT}
+    web:
+      server:
+        request:
+          autotime:
+            enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+        step: 60
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_DATABASE}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    hikari:
+      auto-commit: false
+      maximum-pool-size: 60
+      schema: ${DB_SCHEMA}
+  main:
+    allow-bean-definition-overriding: true
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+    properties:
+      hibernate.enable_lazy_load_no_trans: true
+      hibernate.jdbc.time_zone: UTC
+      hibernate.id.new_generator_mappings: true
+      hibernate.connection.provider_disables_autocommit: true
+      hibernate.cache.use_second_level_cache: false
+      hibernate.cache.use_query_cache: false
+      hibernate.generate_statistics: false
+      # modify batch size as necessary
+      hibernate.jdbc.batch_size: 25
+      hibernate.order_inserts: true
+      hibernate.order_updates: true
+      hibernate.query.fail_on_pagination_over_collection_fetch: true
+      hibernate.query.in_clause_parameter_padding: true
+      hibernate:
+        default_schema: ${DB_SCHEMA}
+    hibernate:
+      show-sql: false
+      ddl-auto: none
+  security:
+    oauth2:
+      client:
+        provider:
+          oidc:
+            issuer-uri: ${AUTH_SERVER_WITH_REALM:https://accounts.google.com}
+        registration:
+          oidc:
+            client-id: ${AUTH_SERVER_CLIENT_ID:448964244087-t7usooho7ls4n95oahntd5l2e7dfj9ro.apps.googleusercontent.com}
+            client-secret: ${AUTH_SERVER_CLIENT_SECRET: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}
+            scope: openid
+
+  liquibase:
+    liquibase-schema: ${DB_SCHEMA}
+    default-schema: ${DB_SCHEMA}

@@ -1,0 +1,12 @@
+/.aws-sam/
+/.idea/
+
+### STS ###
+.classpath
+.factorypath
+.project
+.setting
+
+target/
+.settings/
+bin/
