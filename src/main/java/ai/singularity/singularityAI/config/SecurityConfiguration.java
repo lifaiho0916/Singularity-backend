@@ -4,8 +4,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsUtils;
 
+import ai.singularity.singularityAI.security.TokenAuthenticationFilter;
 import ai.singularity.singularityAI.security.oauth2.CustomOAuth2UserService;
 import ai.singularity.singularityAI.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import ai.singularity.singularityAI.security.oauth2.OAuth2AuthenticationFailureHandler;
@@ -19,9 +21,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 
 @Configuration
 @EnableWebSecurity
@@ -81,11 +80,12 @@ public class SecurityConfiguration {
     public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
         return new HttpCookieOAuth2AuthorizationRequestRepository();
     }
-
+    
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public TokenAuthenticationFilter tokenAuthenticationFilter() {
+        return new TokenAuthenticationFilter();
     }
+
     
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -111,8 +111,7 @@ public class SecurityConfiguration {
                 	.requestMatchers("/actuator/health/**").permitAll()
                 	.requestMatchers("/actuator/info").permitAll()
                 	.requestMatchers("/actuator/prometheus").permitAll()
-                	.requestMatchers("/actuator/**").permitAll()
-                	.requestMatchers("/auth/**", "/oauth2/**").permitAll())
+                	.requestMatchers("/actuator/**").permitAll())
                 .oauth2Login()
                     .authorizationEndpoint()
                         .baseUri("/oauth2/authorize")
@@ -128,7 +127,7 @@ public class SecurityConfiguration {
                     .failureHandler(oAuth2AuthenticationFailureHandler);
 
         // Add our custom Token based authentication filter
-//        http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

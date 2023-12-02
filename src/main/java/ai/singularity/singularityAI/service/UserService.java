@@ -1,6 +1,7 @@
 package ai.singularity.singularityAI.service;
 
 import ai.singularity.singularityAI.entity.User;
+import ai.singularity.singularityAI.exception.ResourceNotFoundException;
 import ai.singularity.singularityAI.repository.UserRepository;
 import ai.singularity.singularityAI.service.dto.UserDTO;
 import org.modelmapper.ModelMapper;
@@ -19,6 +20,11 @@ public class UserService {
     public UserService(UserRepository userRepository, ModelMapper modelMapper) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
+    }
+    
+    public UserDTO getCurrentUser(Long userId) {
+    	return userRepository.findById(userId).map(user -> modelMapper.map(user, UserDTO.class))
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
     }
 
     public UserDTO save(UserDTO userDTO) {

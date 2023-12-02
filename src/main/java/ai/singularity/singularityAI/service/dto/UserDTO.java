@@ -12,19 +12,13 @@ public class UserDTO implements Serializable {
 
     private String email;
 
-    private String fullName;
-
-    private String companyName;
-
-    private String companyType;
-
-    private String role;
+    private String first_name;
+    
+    private String last_name;
+    
+    private String avatar;
 
     private Date createdAt;
 
     private Date updatedAt;
-
-    private String createdBy;
-
-    private String updatedBy;
 }

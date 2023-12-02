@@ -2,10 +2,13 @@ package ai.singularity.singularityAI.resource;
 
 import ai.singularity.singularityAI.service.UserService;
 import ai.singularity.singularityAI.service.dto.UserDTO;
+import ai.singularity.singularityAI.security.UserPrincipal;
+import ai.singularity.singularityAI.security.CurrentUser;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +19,20 @@ import java.util.List;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("v1/user")
 public class UserResource {
 
     @Autowired
     private UserService userService;
+    
+    @GetMapping(
+    		value = "/me",
+    		produces = {"application/json"}
+    )
+    public ResponseEntity<UserDTO> getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
+    	 UserDTO currentUser = userService.getCurrentUser(userPrincipal.getId());
+    	 return ResponseEntity.ok(currentUser);
+    }
 
     /**
      * GET /v1/project : Get all assets
@@ -28,7 +41,7 @@ public class UserResource {
      * @return Successful operation (status code 200)
      */
     @GetMapping(
-            value = "/v1/user",
+            value = "/list",
             produces = {"application/json"}
     )
     public ResponseEntity<List<UserDTO>> getAllAssets(
