@@ -27,8 +27,7 @@ public class UserResource {
      *
      * @return Successful operation (status code 200)
      */
-    @RequestMapping(
-            method = RequestMethod.GET,
+    @GetMapping(
             value = "/v1/user",
             produces = {"application/json"}
     )
@@ -47,8 +46,7 @@ public class UserResource {
      * @return Successful operation (status code 200)
      * or Not found (status code 404)
      */
-    @RequestMapping(
-            method = RequestMethod.GET,
+    @GetMapping(
             value = "/v1/user/{userID}",
             produces = {"application/json"}
     )
@@ -67,8 +65,7 @@ public class UserResource {
      * @return Successful operation (status code 200)
      * or Validation error (status code 400)
      */
-    @RequestMapping(
-            method = RequestMethod.POST,
+    @PostMapping(
             value = "/v1/user",
             produces = {"application/json"},
             consumes = {"application/json"}

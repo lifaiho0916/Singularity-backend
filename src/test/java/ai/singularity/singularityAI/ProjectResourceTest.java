@@ -48,11 +48,11 @@ class ProjectResourceTest {
     @BeforeEach
     void beforeTest() {
         User user = new User();
-        user.setCompanyName("test");
+//        user.setCompanyName("test");
         user.setEmail("daco@daco.sk");
-        user.setRole(UserRoleEnum.SOFTWARE_DEVELOPER);
-        user.setCompanyType(CompanyTypeEnum.SOFTWARE_DEVELOPMENT);
-        user.setFullName("daco daco");
+//        user.setRole(UserRoleEnum.SOFTWARE_DEVELOPER);
+//        user.setCompanyType(CompanyTypeEnum.SOFTWARE_DEVELOPMENT);
+//        user.setFullName("daco daco");
         Optional<User> existedUser = userRepository.findByEmail("daco@daco.sk");
         this.user = existedUser.orElseGet(() -> userRepository.save(user));
     }

@@ -1,57 +1,45 @@
 package ai.singularity.singularityAI.entity;
 
-import ai.singularity.singularityAI.entity.enums.CompanyTypeEnum;
-import ai.singularity.singularityAI.entity.enums.UserRoleEnum;
+import ai.singularity.singularityAI.entity.audit.DateAudit;
+import ai.singularity.singularityAI.entity.enums.AuthProviderEnum;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 @Data
 @Entity
-@Table(name = "s_user")
-public class User implements Serializable {
+@Table(name = "tb_users", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "email")
+})
+public class User extends DateAudit {
 
     @Id
-    @Column(name = "id", nullable = false)
-    @GeneratedValue(generator = "user_id_seq")
-    @SequenceGenerator(name = "user_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "email")
+    @Email
     private String email;
 
-    @Column(name = "full_name")
-    private String fullName;
-
-    @Column(name = "company_name")
-    private String companyName;
-
+    @Column(name = "first_name")
+    private String first_name;
+    
+    @Column(name = "last_name")
+    private String last_name;
+    
+    @Column(name = "avatar")
+    private String avatar;
+    
+    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "company_type")
-    private CompanyTypeEnum companyType;
+    private AuthProviderEnum provider;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role")
-    private UserRoleEnum role;
+    @Column(name = "provider_id")
+    private String providerId;
 
-    @Column(name = "created_at")
-    private Date createdAt;
-
-    @Column(name = "updated_at")
-    private Date updatedAt;
-
-    @Column(name = "created_by")
-    private String createdBy;
-
-    @Column(name = "updated_by")
-    private String updatedBy;
-
-    @OneToMany(mappedBy = "user")
-    private List<Project> userProjects;
-
-//    @ManyToMany(mappedBy = "users")
-//    private List<Project> projects;
+//    @OneToMany(mappedBy = "user")
+//    private List<Project> userProjects;
+//
 }

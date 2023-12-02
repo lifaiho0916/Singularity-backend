@@ -44,7 +44,7 @@ spring:
       hibernate.query.in_clause_parameter_padding: true
     hibernate:
       show-sql: false
-      ddl-auto: none
+      ddl-auto: update
   security:
     oauth2:
       client:
