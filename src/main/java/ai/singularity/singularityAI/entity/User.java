@@ -1,20 +1,22 @@
 package ai.singularity.singularityAI.entity;
 
-import ai.singularity.singularityAI.entity.audit.DateAudit;
 import ai.singularity.singularityAI.entity.enums.AuthProviderEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.util.List;
+import java.util.Date;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Data
 @Entity
 @Table(name = "tb_users", uniqueConstraints = {
         @UniqueConstraint(columnNames = "email")
 })
-public class User extends DateAudit {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,8 +43,12 @@ public class User extends DateAudit {
 
     @Column(name = "provider_id")
     private String providerId;
+    
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private Date createdAt;
 
-//    @OneToMany(mappedBy = "user")
-//    private List<Project> userProjects;
-//
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private Date updatedAt;
 }

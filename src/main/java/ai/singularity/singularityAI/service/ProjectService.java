@@ -28,12 +28,12 @@ public class ProjectService {
                 ProjectDTO source = mappingContext.getSource();
 
                 User user = new User();
-                user.setId(source.getCreatorId());
+                user.setId(source.getCreator().getId());
 
                 Project project = new Project();
                 project.setName(source.getName());
                 project.setDescription(source.getDescription());
-                project.setUser(user);
+                project.setCreator(user);
                 return project;
             }
         };
@@ -52,5 +52,9 @@ public class ProjectService {
 
     public List<ProjectDTO> findAll() {
         return projectRepository.findAll().stream().map(project -> modelMapper.map(project, ProjectDTO.class)).toList();
+    }
+    
+    public List<ProjectDTO> findByCreatorId(Long creatorId) {
+    	return projectRepository.findByCreatorId(creatorId).stream().map(project -> modelMapper.map(project, ProjectDTO.class)).toList();
     }
 }
