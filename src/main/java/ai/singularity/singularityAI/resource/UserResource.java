@@ -28,7 +28,9 @@ public class UserResource {
     		value = "/me",
     		produces = {"application/json"}
     )
-    public ResponseEntity<UserDTO> getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
+    public ResponseEntity<UserDTO> getCurrentUser(
+    		@CurrentUser UserPrincipal userPrincipal
+    ) {
     	 UserDTO currentUser = userService.getCurrentUser(userPrincipal.getId());
     	 return ResponseEntity.ok(currentUser);
     }

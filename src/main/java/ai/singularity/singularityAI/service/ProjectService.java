@@ -54,7 +54,11 @@ public class ProjectService {
         return projectRepository.findAll().stream().map(project -> modelMapper.map(project, ProjectDTO.class)).toList();
     }
     
-    public List<ProjectDTO> findByCreatorId(Long creatorId) {
-    	return projectRepository.findByCreatorId(creatorId).stream().map(project -> modelMapper.map(project, ProjectDTO.class)).toList();
+    public List<ProjectDTO> findByCreatorId(Long creatorID) {
+    	return projectRepository.findByCreatorId(creatorID).stream().map(project -> modelMapper.map(project, ProjectDTO.class)).toList();
+    }
+    
+    public void deleteById(long projectID) {
+    	projectRepository.deleteById(projectID);
     }
 }

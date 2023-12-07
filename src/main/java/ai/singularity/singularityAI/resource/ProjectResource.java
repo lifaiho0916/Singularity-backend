@@ -1,12 +1,30 @@
 package ai.singularity.singularityAI.resource;
 
+import ai.singularity.singularityAI.elasticEmail.ElasticEmailClient;
+import ai.singularity.singularityAI.entity.Member;
+import ai.singularity.singularityAI.entity.Project;
+import ai.singularity.singularityAI.entity.User;
+import ai.singularity.singularityAI.entity.enums.PositionEnum;
+import ai.singularity.singularityAI.repository.MemberRepository;
+import ai.singularity.singularityAI.repository.ProjectRepository;
+import ai.singularity.singularityAI.repository.UserRepository;
+import ai.singularity.singularityAI.security.CurrentUser;
+import ai.singularity.singularityAI.security.TokenProvider;
+import ai.singularity.singularityAI.security.UserPrincipal;
 import ai.singularity.singularityAI.service.ProjectService;
+import ai.singularity.singularityAI.service.UserService;
+import ai.singularity.singularityAI.service.dto.AcceptInvitationDTO;
+import ai.singularity.singularityAI.service.dto.InvitationDTO;
+import ai.singularity.singularityAI.service.dto.InviteMemberDTO;
 import ai.singularity.singularityAI.service.dto.ProjectDTO;
+import ai.singularity.singularityAI.service.dto.UserDTO;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +39,24 @@ public class ProjectResource {
 
     @Autowired
     private ProjectService projectService;
+    
+    @Autowired
+    private UserService userService;
+    
+    @Autowired
+    private TokenProvider tokenProvider;
+    
+    @Autowired
+    private Environment environment;
+    
+    @Autowired
+    private UserRepository userRepository;
+    
+    @Autowired
+    private MemberRepository memberRepository;
+    
+    @Autowired
+    private ProjectRepository projectRepository;
 
     /**
      * GET /v1/project : Get all assets
@@ -54,6 +90,69 @@ public class ProjectResource {
         List<ProjectDTO> result = projectService.findByCreatorId(creatorId);
         return ResponseEntity.ok(result);
     }
+    
+    /**
+     * POST /v1/project/{projectID}/invite : Send Invitation mails
+     * Send Invitation mails
+     *
+     * @return Successful operation (status code 200)
+     */
+    @PostMapping(
+    		value = "/{projectID}/invite"
+    )
+    public ResponseEntity<String> sendInvitationEmail(
+    		@PathVariable("projectID") Long projectID,
+    		@Valid @RequestBody InviteMemberDTO inviteMemberDTO,
+    		@CurrentUser UserPrincipal userPrincipal
+    ) {
+    	UserDTO currentUser = userService.getCurrentUser(userPrincipal.getId());
+    	ProjectDTO projectDTO = projectService.findById(projectID).get();
+    	inviteMemberDTO.getMembers().forEach(member -> {
+    		String token = tokenProvider.createInvitationToken(member, projectDTO.getId(), currentUser.getId());
+    		String clientUrl = environment.getProperty("app.clientUrl");
+    		String result = ElasticEmailClient.Send(
+    			currentUser.getEmail(),
+    			currentUser.getFirst_name() + " " + currentUser.getLast_name(),
+    			 "You have been invited as " + member.getPosition().toString() + " on Singularity Project: " + projectDTO.getName(), 
+    			 String.format("<a href=\"%s\">Accept Invitation</a>", clientUrl + "/invite?token=" + token), 
+    			 member.getEmail(),
+    			 "true"
+    		);
+    		System.out.println(result);
+    	});
+        return ResponseEntity.ok("The invitation email has been successfully delivered");
+    }
+    
+    @PostMapping(
+    		value = "/accept-invitation"
+    )
+    public ResponseEntity<String> AcceptInvitation(
+    		@Valid @RequestBody AcceptInvitationDTO acceptInvitationDTO,
+    		@CurrentUser UserPrincipal userPrincipal
+    ) {
+    	String token = acceptInvitationDTO.getToken();
+    	if(tokenProvider.validateToken(token)) {
+    		InvitationDTO invitationDTO = tokenProvider.getInvitationInfoFromToken(token);
+    		User user = userRepository.findById(userPrincipal.getId())
+					.orElseThrow(() -> new UsernameNotFoundException("User not found with email : " + invitationDTO.getEmail()));
+    		if(user.getEmail().equals(invitationDTO.getEmail())) {
+    			Member member = new Member();
+        		member.setPosition(PositionEnum.valueOf(invitationDTO.getPosition()));
+        		member.setUser(user);
+        		Member savedMember = memberRepository.save(member);
+        		Project project = projectRepository.findById(invitationDTO.getProjectID()).orElseThrow();
+        		List<Member> projectMembers = project.getMembers();
+        		projectMembers.add(savedMember);
+        		projectRepository.save(project);
+        		return ResponseEntity.ok("Accepted invitation successfully");
+    		} else {
+    			return ResponseEntity.ok("Failed to Accept invitation successfully");
+    		}
+    		
+    	} else {
+    		return ResponseEntity.ok("Failed to Accept invitation successfully");
+    	}
+    }
 
     /**
      * GET /v1/project/{projectID} : Get asset by ID
@@ -72,6 +171,30 @@ public class ProjectResource {
     ) {
         var result = projectService.findById(projectID);
         return result.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+    
+    
+    /**
+     * Delete /v1/project/{projectID} : Delete asset by ID
+     * Delete asset by ID
+     *
+     * @param projectID ID of process (required)
+     * @return Successful operation (status code 200)
+     * or Not found (status code 404)
+     */
+    @DeleteMapping(
+            value = "/{projectID}",
+            produces = {"application/json"}
+    )
+    public ResponseEntity<Boolean> DeleteAssetByID(
+            @PathVariable("projectID") Long projectID
+    ) {
+    	try {
+    		projectService.deleteById(projectID);
+    		return ResponseEntity.ok(true);
+    	} catch (Exception e) {
+    		return ResponseEntity.notFound().build();
+    	}
     }
 
     /**
