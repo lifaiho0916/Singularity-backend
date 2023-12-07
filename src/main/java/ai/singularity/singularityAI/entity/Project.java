@@ -42,9 +42,8 @@ public class Project {
     
     @ManyToMany
     private List<Member> members;
-    
+}
 //    @Convert(converter = JpaConverterJson.class)
 //    @Column(name = "data", nullable = false, columnDefinition = "jsonb")
 //    @ColumnTransformer(write = "?::jsonb")
 //    private String data = "{}";
-}

@@ -28,7 +28,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Validated
 @AllArgsConstructor
@@ -87,8 +89,13 @@ public class ProjectResource {
     public ResponseEntity<List<ProjectDTO>> getAssetsbyCreatorId(
     		@PathVariable("creatorId") Long creatorId
     ) {
+    	List<ProjectDTO> combinedList = new ArrayList<>();
         List<ProjectDTO> result = projectService.findByCreatorId(creatorId);
-        return ResponseEntity.ok(result);
+        List<ProjectDTO> result1 = projectService.findByMemberUser(creatorId);
+        
+        combinedList.addAll(result);
+        combinedList.addAll(result1);
+        return ResponseEntity.ok(combinedList);
     }
     
     /**
@@ -136,22 +143,27 @@ public class ProjectResource {
     		User user = userRepository.findById(userPrincipal.getId())
 					.orElseThrow(() -> new UsernameNotFoundException("User not found with email : " + invitationDTO.getEmail()));
     		if(user.getEmail().equals(invitationDTO.getEmail())) {
-    			Member member = new Member();
-        		member.setPosition(PositionEnum.valueOf(invitationDTO.getPosition()));
-        		member.setUser(user);
-        		Member savedMember = memberRepository.save(member);
-        		Project project = projectRepository.findById(invitationDTO.getProjectID()).orElseThrow();
+    			Project project = projectRepository.findById(invitationDTO.getProjectID()).orElseThrow();
         		List<Member> projectMembers = project.getMembers();
-        		projectMembers.add(savedMember);
-        		projectRepository.save(project);
-        		return ResponseEntity.ok("Accepted invitation successfully");
-    		} else {
-    			return ResponseEntity.ok("Failed to Accept invitation successfully");
-    		}
-    		
-    	} else {
-    		return ResponseEntity.ok("Failed to Accept invitation successfully");
+        		AtomicBoolean repeated = new AtomicBoolean(false);
+        		projectMembers.forEach(mem -> {
+        			if(mem.getUser().getId() == user.getId()) {
+        				repeated.set(true);
+        			}
+        		});
+        		if(!repeated.get()) {
+        			Member member = new Member();
+            		member.setPosition(PositionEnum.valueOf(invitationDTO.getPosition()));
+            		member.setUser(user);
+            		Member savedMember = memberRepository.save(member);
+            		
+            		projectMembers.add(savedMember);
+            		projectRepository.save(project);
+            		return ResponseEntity.ok("Accepted invitation successfully");
+        		} 
+    		} 
     	}
+    	return ResponseEntity.ok("Failed to Accept invitation successfully");
     }
 
     /**
