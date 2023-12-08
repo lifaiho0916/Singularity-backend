@@ -255,33 +255,33 @@
             <!--                    </dependency>-->
             <!--                </dependencies>-->
             <!--            </plugin>-->
-            <!--            <plugin>-->
-            <!--                <groupId>com.google.cloud.tools</groupId>-->
-            <!--                <artifactId>jib-maven-plugin</artifactId>-->
-            <!--                <version>3.3.1</version>-->
-            <!--                <configuration>-->
-            <!--                    <to>-->
-            <!--                        <image></image>-->
-            <!--                        <auth>-->
-            <!--                            <username></username>-->
-            <!--                            <password></password>-->
-            <!--                        </auth>-->
-            <!--                    </to>-->
-            <!--                    <container>-->
-            <!--                        <user>1002</user>-->
-            <!--                        <creationTime>USE_CURRENT_TIMESTAMP</creationTime>-->
-            <!--                        <environment>-->
-            <!--                            <VERSION>$version</VERSION>-->
-            <!--                        </environment>-->
-            <!--                    </container>-->
-            <!--                    <from>-->
-            <!--                        <image>-->
-            <!--                            eclipse-temurin:17.0.6_10-jre-alpine@sha256:c26a727c4883eb73d32351be8bacb3e70f390c2c94f078dc493495ed93c60c2f-->
-            <!--                        </image>-->
-            <!--                    </from>-->
-            <!--                    <allowInsecureRegistries>true</allowInsecureRegistries>-->
-            <!--                </configuration>-->
-            <!--            </plugin>-->
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>3.3.1</version>
+                <configuration>
+                    <to>
+                        <image>singularity-backend</image>
+                        <!--                                    <auth>-->
+                        <!--                                        <username></username>-->
+                        <!--                                        <password></password>-->
+                        <!--                                    </auth>-->
+                    </to>
+                    <container>
+                        <user>1002</user>
+                        <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
+                        <environment>
+                            <VERSION>$version</VERSION>
+                        </environment>
+                    </container>
+                    <from>
+                        <image>
+                            eclipse-temurin:17.0.6_10-jre-alpine@sha256:c26a727c4883eb73d32351be8bacb3e70f390c2c94f078dc493495ed93c60c2f
+                        </image>
+                    </from>
+                    <allowInsecureRegistries>true</allowInsecureRegistries>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
