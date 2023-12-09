@@ -62,7 +62,6 @@ class ProjectResourceTest {
 
         final ProjectDTO projectDTO = new ProjectDTO();
         projectDTO.setName("name");
-        projectDTO.setCreatorId(this.user.getId());
 
         // Run the test
         mockMvc.perform(post("/v1/project")
@@ -79,7 +78,6 @@ class ProjectResourceTest {
 
         final ProjectDTO projectDTO = new ProjectDTO();
         projectDTO.setName("name");
-        projectDTO.setCreatorId(this.user.getId());
 
         Project saved = projectRepository.save(modelMapper.map(projectDTO, Project.class));
 
@@ -101,7 +99,6 @@ class ProjectResourceTest {
 
         final ProjectDTO projectDTO = new ProjectDTO();
         projectDTO.setName("name");
-        projectDTO.setCreatorId(this.user.getId());
 
         Project saved = projectRepository.save(modelMapper.map(projectDTO, Project.class));
 
@@ -122,7 +119,6 @@ class ProjectResourceTest {
 
         final ProjectDTO projectDTO = new ProjectDTO();
         projectDTO.setName("name");
-        projectDTO.setCreatorId(this.user.getId());
 
         Project saved = projectRepository.save(modelMapper.map(projectDTO, Project.class));
 

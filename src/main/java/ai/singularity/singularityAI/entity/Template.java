@@ -9,13 +9,11 @@ import java.io.Serializable;
 
 @Data
 @Entity
-@Table(name = "template")
+@Table(name = "tb_templates")
 public class Template implements Serializable {
 
     @Id
-    @Column(name = "id", nullable = false)
-    @GeneratedValue(generator = "template_id_seq")
-    @SequenceGenerator(name = "template_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "name")
@@ -28,5 +26,4 @@ public class Template implements Serializable {
     @Column(name = "data", nullable = false, columnDefinition = "jsonb")
     @ColumnTransformer(write = "?::jsonb")
     private String data;
-
 }

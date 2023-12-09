@@ -4,6 +4,8 @@ import ai.singularity.singularityAI.entity.Project;
 import ai.singularity.singularityAI.entity.User;
 import ai.singularity.singularityAI.repository.ProjectRepository;
 import ai.singularity.singularityAI.service.dto.ProjectDTO;
+
+import org.json.JSONObject;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.spi.MappingContext;
@@ -41,9 +43,14 @@ public class ProjectService {
         this.modelMapper.addConverter(projectConverter);
     }
 
-    public ProjectDTO save(ProjectDTO projectDTO) {
+    public ProjectDTO save(ProjectDTO projectDTO, JSONObject template) {
         Project result = projectRepository.save(modelMapper.map(projectDTO, Project.class));
-        return modelMapper.map(result, ProjectDTO.class);
+        JSONObject projectObject = template.getJSONObject("project");
+        projectObject.put("id", result.getId());
+        projectObject.put("name", result.getName());
+        result.setData(template.toString());
+        Project result1 = projectRepository.save(result);
+        return modelMapper.map(result1, ProjectDTO.class);
     }
 
     public Optional<ProjectDTO> findById(Long projectID) {
@@ -62,7 +69,7 @@ public class ProjectService {
     	return projectRepository.findByMemberUser(userId).stream().map(project -> modelMapper.map(project, ProjectDTO.class)).toList();
     }
     
-    public void deleteById(long projectID) {
+    public void deleteById(Long projectID) {
     	projectRepository.deleteById(projectID);
     }
 }

@@ -1,8 +1,10 @@
 package ai.singularity.singularityAI.entity;
 
-//import ai.singularity.singularityAI.entity.converter.JpaConverterJson;
+import ai.singularity.singularityAI.entity.converter.JpaConverterJson;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import org.hibernate.annotations.ColumnTransformer;
 //import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -42,8 +44,9 @@ public class Project {
     
     @ManyToMany
     private List<Member> members;
+    
+    @Convert(converter = JpaConverterJson.class)
+    @Column(name = "data", nullable = false, columnDefinition = "jsonb")
+    @ColumnTransformer(write = "?::jsonb")
+    private String data = "{}";
 }
-//    @Convert(converter = JpaConverterJson.class)
-//    @Column(name = "data", nullable = false, columnDefinition = "jsonb")
-//    @ColumnTransformer(write = "?::jsonb")
-//    private String data = "{}";

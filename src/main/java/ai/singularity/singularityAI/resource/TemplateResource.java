@@ -10,12 +10,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Validated
 @AllArgsConstructor
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("v1/template")
 public class TemplateResource {
 
     @Autowired
@@ -27,9 +30,7 @@ public class TemplateResource {
      *
      * @return Successful operation (status code 200)
      */
-    @RequestMapping(
-            method = RequestMethod.GET,
-            value = "/v1/template",
+    @GetMapping(
             produces = {"application/json"}
     )
     public ResponseEntity<List<TemplateDTO>> getAllTemplates(
@@ -47,9 +48,8 @@ public class TemplateResource {
      * @return Successful operation (status code 200)
      * or Not found (status code 404)
      */
-    @RequestMapping(
-            method = RequestMethod.GET,
-            value = "/v1/template/{templateID}",
+    @GetMapping(
+            value = "/{templateID}",
             produces = {"application/json"}
     )
     public ResponseEntity<TemplateDTO> getTemplateByID(
@@ -66,9 +66,7 @@ public class TemplateResource {
      * @return Successful operation (status code 200)
      * or Validation error (status code 400)
      */
-    @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/v1/template",
+    @PostMapping(
             produces = {"application/json"},
             consumes = {"application/json"}
     )
@@ -88,9 +86,7 @@ public class TemplateResource {
      * @return Successful operation (status code 200)
      * or Validation error (status code 400)
      */
-    @RequestMapping(
-            method = RequestMethod.PUT,
-            value = "/v1/template",
+    @PutMapping(
             produces = {"application/json"},
             consumes = {"application/json"}
     )
