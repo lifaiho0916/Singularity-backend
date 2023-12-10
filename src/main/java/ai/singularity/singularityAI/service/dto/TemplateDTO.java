@@ -12,5 +12,7 @@ public class TemplateDTO implements Serializable {
     private String name;
 
     private String description;
+    
+    private boolean defaultTemplate;
 
 }

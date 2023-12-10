@@ -231,8 +231,6 @@ public class ProjectResource {
     	projectDTO.setDescription(projectRequestDTO.getDescription());
     	projectDTO.setCreator(projectRequestDTO.getCreator());
     	Long templateId = projectRequestDTO.getTemplateId();
-//    	String templateData = projectRequestDTO.getTemplate();
-//    	JSONObject template = new JSONObject(templateData);
         ProjectDTO saved = projectService.save(projectDTO, templateId);
     	return ResponseEntity.ok(saved);
     }

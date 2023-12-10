@@ -55,7 +55,7 @@ public class ProjectService {
         JSONObject projectObject = templateJSON.getJSONObject("project");
         projectObject.put("id", result.getId());
         projectObject.put("name", result.getName());
-        result.setData(template.toString());
+        result.setData(templateJSON.toString());
         Project result1 = projectRepository.save(result);
         return modelMapper.map(result1, ProjectDTO.class);
     }

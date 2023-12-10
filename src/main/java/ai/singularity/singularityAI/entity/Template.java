@@ -21,6 +21,9 @@ public class Template implements Serializable {
 
     @Column(name = "description")
     private String description;
+    
+    @Column(name = "defaultTemplate")
+    private boolean defaultTemplate;
 
     @Convert(converter = JpaConverterJson.class)
     @Column(name = "data", nullable = false, columnDefinition = "jsonb")
