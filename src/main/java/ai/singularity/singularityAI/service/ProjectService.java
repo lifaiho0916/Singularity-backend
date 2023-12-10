@@ -2,7 +2,9 @@ package ai.singularity.singularityAI.service;
 
 import ai.singularity.singularityAI.entity.Project;
 import ai.singularity.singularityAI.entity.User;
+import ai.singularity.singularityAI.entity.Template;
 import ai.singularity.singularityAI.repository.ProjectRepository;
+import ai.singularity.singularityAI.repository.TemplateRepository;
 import ai.singularity.singularityAI.service.dto.ProjectDTO;
 
 import org.json.JSONObject;
@@ -18,12 +20,15 @@ import java.util.Optional;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
+    
+    private final TemplateRepository templateRepository;
 
     private final ModelMapper modelMapper;
 
-    public ProjectService(ProjectRepository projectRepository, ModelMapper modelMapper) {
+    public ProjectService(ProjectRepository projectRepository, TemplateRepository templateRepository, ModelMapper modelMapper) {
         this.projectRepository = projectRepository;
         this.modelMapper = modelMapper;
+        this.templateRepository = templateRepository;
         Converter<ProjectDTO, Project> projectConverter = new Converter<ProjectDTO, Project>() {
             @Override
             public Project convert(MappingContext<ProjectDTO, Project> mappingContext) {
@@ -43,9 +48,11 @@ public class ProjectService {
         this.modelMapper.addConverter(projectConverter);
     }
 
-    public ProjectDTO save(ProjectDTO projectDTO, JSONObject template) {
+    public ProjectDTO save(ProjectDTO projectDTO, Long templateId) {
         Project result = projectRepository.save(modelMapper.map(projectDTO, Project.class));
-        JSONObject projectObject = template.getJSONObject("project");
+        Template template = templateRepository.getById(templateId);
+        JSONObject templateJSON = new JSONObject(template.getData());
+        JSONObject projectObject = templateJSON.getJSONObject("project");
         projectObject.put("id", result.getId());
         projectObject.put("name", result.getName());
         result.setData(template.toString());

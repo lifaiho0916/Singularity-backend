@@ -26,8 +26,8 @@ public class TemplateService {
         return modelMapper.map(result, TemplateDTO.class);
     }
 
-    public Optional<TemplateDTO> findById(Long projectID) {
-        return templateRepository.findById(projectID).map(template -> modelMapper.map(template, TemplateDTO.class));
+    public Optional<TemplateDTO> findById(Long templateID) {
+        return templateRepository.findById(templateID).map(template -> modelMapper.map(template, TemplateDTO.class));
     }
 
     public List<TemplateDTO> findAll() {

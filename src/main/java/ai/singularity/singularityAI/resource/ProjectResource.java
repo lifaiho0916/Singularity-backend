@@ -230,9 +230,10 @@ public class ProjectResource {
     	projectDTO.setName(projectRequestDTO.getName());
     	projectDTO.setDescription(projectRequestDTO.getDescription());
     	projectDTO.setCreator(projectRequestDTO.getCreator());
-    	String templateData = projectRequestDTO.getTemplate();
-    	JSONObject template = new JSONObject(templateData);
-        ProjectDTO saved = projectService.save(projectDTO, template);
+    	Long templateId = projectRequestDTO.getTemplateId();
+//    	String templateData = projectRequestDTO.getTemplate();
+//    	JSONObject template = new JSONObject(templateData);
+        ProjectDTO saved = projectService.save(projectDTO, templateId);
     	return ResponseEntity.ok(saved);
     }
 

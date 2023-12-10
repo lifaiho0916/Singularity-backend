@@ -13,5 +13,4 @@ public class TemplateDTO implements Serializable {
 
     private String description;
 
-    private String data;
 }

@@ -7,5 +7,5 @@ public class ProjectRequestDTO {
 	private String name;
     private String description;
     private UserDTO creator;
-    private String template;
+    private Long templateId;
 }
