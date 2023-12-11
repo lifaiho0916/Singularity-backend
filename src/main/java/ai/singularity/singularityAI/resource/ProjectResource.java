@@ -17,6 +17,7 @@ import ai.singularity.singularityAI.service.dto.AcceptInvitationDTO;
 import ai.singularity.singularityAI.service.dto.InvitationDTO;
 import ai.singularity.singularityAI.service.dto.InviteMemberDTO;
 import ai.singularity.singularityAI.service.dto.ProjectDTO;
+import ai.singularity.singularityAI.service.dto.ProjectMemberDTO;
 import ai.singularity.singularityAI.service.dto.ProjectRequestDTO;
 import ai.singularity.singularityAI.service.dto.UserDTO;
 import jakarta.validation.Valid;
@@ -32,6 +33,7 @@ import org.json.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Validated
@@ -168,6 +170,25 @@ public class ProjectResource {
     	return ResponseEntity.ok("Failed to Accept invitation successfully");
     }
 
+    /**
+     * GET /v1/project/{projectID} : Get asset by ID
+     * Get asset by ID
+     *
+     * @param projectID ID of process (required)
+     * @return Successful operation (status code 200)
+     * or Not found (status code 404)
+     */
+    @GetMapping(
+            value = "/{projectID}/open",
+            produces = {"application/json"}
+    )
+    public void setOepnAtByID(
+            @PathVariable("projectID") Long projectID
+    ) {
+        projectService.setOpenAtById(projectID);
+    }
+    
+    
     /**
      * GET /v1/project/{projectID} : Get asset by ID
      * Get asset by ID
