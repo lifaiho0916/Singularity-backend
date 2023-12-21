@@ -14,7 +14,7 @@ import java.util.List;
 
 @Data
 @Entity
-@Table(name = "tb_projects")
+@Table(name = "projects")
 public class Project {
 
 	@Id

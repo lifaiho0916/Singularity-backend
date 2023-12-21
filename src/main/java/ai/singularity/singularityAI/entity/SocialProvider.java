@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "tb_social_providers")
+@Table(name = "social_providers")
 public class SocialProvider {
 
     @Id

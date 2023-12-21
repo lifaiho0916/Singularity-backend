@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 @Data
 @Entity
-@Table(name = "tb_templates")
+@Table(name = "templates")
 public class Template implements Serializable {
 
     @Id
