@@ -21,6 +21,7 @@ import ai.singularity.singularityAI.service.dto.InviteMemberDTO;
 import ai.singularity.singularityAI.service.dto.ProjectDTO;
 import ai.singularity.singularityAI.service.dto.ProjectMemberDTO;
 import ai.singularity.singularityAI.service.dto.ProjectRequestDTO;
+import ai.singularity.singularityAI.service.dto.ProjectDataDTO;
 import ai.singularity.singularityAI.service.dto.UploadProjectImageRequestDTO;
 import ai.singularity.singularityAI.service.dto.UserDTO;
 import jakarta.validation.Valid;
@@ -28,6 +29,7 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.annotation.Validated;
@@ -285,6 +287,35 @@ public class ProjectResource {
     	}).toList();
     	return ResponseEntity.ok(images);
     }
+    
+    /**
+     * PUT /v1/project/{projectID} : Upload image by id
+     * Upload 
+     *
+     * @param projectDataDTO update project (required)
+     * @return Successful operation (status code 200)
+     * or Validation error (status code 400)
+     */
+
+    @PutMapping(
+    		value = "/{projectID}",
+    		produces = {"application/json"}
+    )
+    public ResponseEntity<String> updateProject(
+    		@PathVariable("projectID") Long projectID,
+    		@RequestBody ProjectDataDTO projectDataDTO
+    ) {
+    	Optional<Project> optionalProject = projectRepository.findById(projectID);
+    	if (optionalProject.isPresent()) {
+	        Project project = optionalProject.get();
+	        project.setData(projectDataDTO.getData());
+	        projectRepository.save(project);
+	        return ResponseEntity.ok("ViewTree Saved successfully");
+	    } else {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("There is no such a project");
+	    }
+    }
+    
    
     
     /**
