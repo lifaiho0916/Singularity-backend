@@ -18,6 +18,7 @@ import ai.singularity.singularityAI.service.UserService;
 import ai.singularity.singularityAI.service.dto.AcceptInvitationDTO;
 import ai.singularity.singularityAI.service.dto.InvitationDTO;
 import ai.singularity.singularityAI.service.dto.InviteMemberDTO;
+import ai.singularity.singularityAI.service.dto.MediaDTO;
 import ai.singularity.singularityAI.service.dto.ProjectDTO;
 import ai.singularity.singularityAI.service.dto.ProjectMemberDTO;
 import ai.singularity.singularityAI.service.dto.ProjectRequestDTO;
@@ -278,12 +279,15 @@ public class ProjectResource {
     		value = "/{projectID}/images",
             produces = {"application/json"}
     )
-    public ResponseEntity<List<String>> getProjectImage(
+    public ResponseEntity<List<MediaDTO>> getProjectImage(
     		@PathVariable("projectID") Long projectID
     ) {
     	List<Media> medias = mediaRepository.findByProjectId(projectID);
-    	List<String> images = medias.stream().map(media -> {
-    		return media.getImageData();
+    	List<MediaDTO> images = medias.stream().map(media -> {
+    		MediaDTO newMediaDTO = new MediaDTO();
+    		newMediaDTO.setId(media.getId());
+    		newMediaDTO.setImageData(media.getImageData());
+    		return newMediaDTO;
     	}).toList();
     	return ResponseEntity.ok(images);
     }

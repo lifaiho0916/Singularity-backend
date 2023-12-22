@@ -39,6 +39,7 @@ class TemplateResourceTest {
 
         final TemplateDTO templateDTO = new TemplateDTO();
         templateDTO.setName("name");
+        templateDTO.setData("{\"field\":\"value\"}");
         templateDTO.setDescription("test desc");
 
         // Run the test
@@ -57,6 +58,7 @@ class TemplateResourceTest {
 
         final TemplateDTO templateDTO = new TemplateDTO();
         templateDTO.setName("name");
+        templateDTO.setData("{\"field\":\"value\"}");
         templateDTO.setDescription("test desc");
 
         Template saved = templateRepository.save(modelMapper.map(templateDTO, Template.class));
@@ -75,10 +77,33 @@ class TemplateResourceTest {
     }
 
     @Test
+    void testGetTemplateByID() throws Exception {
+
+        final TemplateDTO templateDTO = new TemplateDTO();
+        templateDTO.setName("name");
+        templateDTO.setData("{\"field\":\"value\"}");
+        templateDTO.setDescription("test desc");
+
+        Template saved = templateRepository.save(modelMapper.map(templateDTO, Template.class));
+
+
+        // Run the test
+        mockMvc.perform(get("/v1/template/{templateID}", saved.getId())
+                        .content(ow.writeValueAsString(templateDTO)
+                        ).contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.id").value(saved.getId()))
+                .andExpect(jsonPath("$.name").value(saved.getName()));
+    }
+
+    @Test
     void testGetAllProcesses() throws Exception {
 
         final TemplateDTO templateDTO = new TemplateDTO();
         templateDTO.setName("name");
+        templateDTO.setData("{\"field\":\"value\"}");
         templateDTO.setDescription("test desc");
 
         Template saved = templateRepository.save(modelMapper.map(templateDTO, Template.class));
