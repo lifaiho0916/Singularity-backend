@@ -1,10 +1,12 @@
 package ai.singularity.singularityAI.resource;
 
 import ai.singularity.singularityAI.elasticEmail.ElasticEmailClient;
+import ai.singularity.singularityAI.entity.Media;
 import ai.singularity.singularityAI.entity.Member;
 import ai.singularity.singularityAI.entity.Project;
 import ai.singularity.singularityAI.entity.User;
 import ai.singularity.singularityAI.entity.enums.PositionEnum;
+import ai.singularity.singularityAI.repository.MediaRepository;
 import ai.singularity.singularityAI.repository.MemberRepository;
 import ai.singularity.singularityAI.repository.ProjectRepository;
 import ai.singularity.singularityAI.repository.UserRepository;
@@ -19,6 +21,7 @@ import ai.singularity.singularityAI.service.dto.InviteMemberDTO;
 import ai.singularity.singularityAI.service.dto.ProjectDTO;
 import ai.singularity.singularityAI.service.dto.ProjectMemberDTO;
 import ai.singularity.singularityAI.service.dto.ProjectRequestDTO;
+import ai.singularity.singularityAI.service.dto.UploadProjectImageRequestDTO;
 import ai.singularity.singularityAI.service.dto.UserDTO;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -31,6 +34,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.json.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -63,6 +67,9 @@ public class ProjectResource {
     
     @Autowired
     private ProjectRepository projectRepository;
+    
+    @Autowired
+    private MediaRepository mediaRepository;
 
     /**
      * GET /v1/project : Get all assets
@@ -254,6 +261,55 @@ public class ProjectResource {
     	Long templateId = projectRequestDTO.getTemplateId();
         ProjectDTO saved = projectService.save(projectDTO, templateId);
     	return ResponseEntity.ok(saved);
+    }
+   
+    /**
+     * GET /v1/project/{projectID}/images : Get images by id
+     * Add a new asset
+     *
+     * @param projectDTO Add a new asset (required)
+     * @return Successful operation (status code 200)
+     * or Validation error (status code 400)
+    */
+   
+    @GetMapping(
+    		value = "/{projectID}/images",
+            produces = {"application/json"}
+    )
+    public ResponseEntity<List<String>> getProjectImage(
+    		@PathVariable("projectID") Long projectID
+    ) {
+    	List<Media> medias = mediaRepository.findByProjectId(projectID);
+    	List<String> images = medias.stream().map(media -> {
+    		return media.getImageData();
+    	}).toList();
+    	return ResponseEntity.ok(images);
+    }
+   
+    
+    /**
+     * POST /v1/project/{projectID}/upload : Upload image by id
+     * Upload 
+     *
+     * @param projectDTO Add a new asset (required)
+     * @return Successful operation (status code 200)
+     * or Validation error (status code 400)
+     */
+    
+    @PostMapping(
+    		value = "/{projectID}/upload",
+            consumes = {"application/json"}
+    )
+    public ResponseEntity<String> uploadProjectImage(
+    		@PathVariable("projectID") Long projectID,
+            @Valid @RequestBody UploadProjectImageRequestDTO uploadProjectImageRequestDTO
+    ) {
+    	Project project = projectRepository.getById(projectID);
+    	Media media = new Media();
+    	media.setProject(project);
+    	media.setImageData(uploadProjectImageRequestDTO.getImageData());
+    	mediaRepository.save(media);
+    	return ResponseEntity.ok("Success");
     }
 
     /**
