@@ -235,6 +235,7 @@ public class ProjectResource {
             @PathVariable("projectID") Long projectID
     ) {
     	try {
+    		mediaRepository.deleteByProjectId(projectID);
     		projectService.deleteById(projectID);
     		return ResponseEntity.ok(true);
     	} catch (Exception e) {
